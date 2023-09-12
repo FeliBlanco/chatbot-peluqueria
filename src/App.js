@@ -21,6 +21,11 @@ const preguntas = [
                 text: '3- ¿En donde se encuentra la peluquería?',
                 response:'3',
                 next:4
+            },
+            {
+                text: '4- ¿Cuales son sus horarios?',
+                response: '4',
+                next: 5
             }
         ]
     },
@@ -43,6 +48,11 @@ const preguntas = [
                 text: '3- ¿En donde se encuentra la peluquería?',
                 response:'3',
                 next:4
+            },
+            {
+                text: '4- ¿Cuales son sus horarios?',
+                response: '4',
+                next: 5
             }
         ]
     },
@@ -62,6 +72,11 @@ const preguntas = [
     },
     {
         text: 'Nuestra peluquería esta en la calle Corrientes 1250 Villa María, te esperamos!',
+        pregunta: false,
+        next: 1
+    },
+    {
+        text: 'Nuestros horarios son de Martes a Viernes de 09:00hs a 18:00hs y Sábados de 9:00hs a 13:00hs. Te esperamos!',
         pregunta: false,
         next: 1
     }
