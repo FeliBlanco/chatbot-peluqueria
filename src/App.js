@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import { useState, useRef, useEffect } from 'react'
 
+let horarios = ['10:00', '11:00', '12:00', '15:00', '16:00', '17:00', '18:00']
+
+const numeros = "0123456789"
+
 const preguntas = [
     {
         text: "Hola! Soy el asistente de PELUQUERÍA, ¿en qué te puedo ayudar?",
@@ -57,7 +61,7 @@ const preguntas = [
         ]
     },
     {
-        text: '¿Qué día te queda cómodo? (response con formato dd/mm/aa )',
+        text: '¿Qué día te queda cómodo? (responde con formato dd/mm/aa )',
         pregunta:true,
         type_response: 'date',
         id:'dia_turno',
@@ -79,6 +83,22 @@ const preguntas = [
         text: 'Nuestros horarios son de Martes a Viernes de 09:00hs a 18:00hs y Sábados de 9:00hs a 13:00hs. Te esperamos!',
         pregunta: false,
         next: 1
+    },
+    {
+        text:'Responde con el número que le corresponda al horario:',
+        pregunta: true,
+        type_response: 'text',
+        id: 'horario_turno',
+        opciones: [
+
+        ]
+    },
+    {
+        text: 'Perfecto! Decime tu nombre para agendar el turno por favor:',
+        pregunta: true,
+        type_response: 'text',
+        id: 'nombre_turno',
+        opciones: []
     }
 ]
 
@@ -86,6 +106,7 @@ const preguntas = [
 export default function App() {
 
     const [getChat, setChat] = useState([])
+    const [getTurnoInfo, setTurnoInfo] = useState({horario: 0, nombre: '-', fecha:'-'})
 
     const refInput = useRef()
 
@@ -139,15 +160,43 @@ export default function App() {
                 if(current.id == "dia_turno") {
                     const split = text.split('/');
                     if(split.length == 3) {
+                        for(let i = 0; i < split.length; i++) {
+                            for(let j = 0; j < split[i].length; j++) {
+                                if(numeros.indexOf(split[i][j]) == -1) {
+                                    sendSystemMessage("Responde con formato dd/mm/aa por favor. Ejemplo: 12/02/2023.")
+                                    return 1;
+                                }
+                            }
+                        }
     
                         //Funcion de buscar en esa fecha
+
+                        setTurnoInfo(i => ({...i, fecha: text}))
+
+                        sendSystemMessage(`Para el ${text} tengo los siguientes horarios:`)
+
+                        for(let i = 0; i < horarios.length; i++) {
+                            sendSystemMessage(`${i + 1} - ${horarios[i]}`)
+                        }
     
-                        sendSystemMessage("Disculpa, no tengo turnos disponibles para esa fecha.")
-                        agregarPregunta(1)
+                        /*sendSystemMessage("Disculpa, no tengo turnos disponibles para esa fecha.")
+                        agregarPregunta(1)*/
+                        agregarPregunta(6)
     
                     } else {
                         sendSystemMessage("Responde con formato dd/mm/aa por favor. Ejemplo: 12/02/2023.")
                     }
+                }
+            } else if(current.type_response == "text") {
+                if(current.id == "horario_turno") {
+                    const horario = parseInt(text) - 1;
+                    setTurnoInfo(i => ({...i, horario: horario}))
+                    agregarPregunta(7)
+                } else if(current.id == "nombre_turno") {
+                    sendSystemMessage(`Perfecto! Tu turno se agendó para el ${getTurnoInfo.fecha} a las ${horarios[getTurnoInfo.horario]} a nombre de ${text}. Te esperamos!`);
+                    setTimeout(() => {
+                        agregarPregunta(0)
+                    }, 2000)
                 }
             }
         }
@@ -158,7 +207,6 @@ export default function App() {
     }
     return (
         <Container>
-            dsadsa
             <ChatContainer>
                 <ChatHeader>
                     <span>Atención al cliente</span>
